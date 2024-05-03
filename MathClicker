@@ -167,7 +167,6 @@
   function changeEmoji(emoji) {
     clickerButton.textContent = emoji;
   }
-<script>
   // ... (rest of your existing script)
 
   let clickCount = 0; // New variable to keep track of the number of clicks
