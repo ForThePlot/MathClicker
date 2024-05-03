@@ -89,8 +89,6 @@
   <button id="cool-button" onclick="changeEmoji('😎')">😎</button>
   <button id="crying-button" onclick="changeEmoji('😢')">😢</button>
 </div>
-
-<script>
   let score = 0;
   let scorePerClick = 1;
   let autoClickerInterval;
@@ -200,7 +198,6 @@
   }
 
   // ... (rest of your existing script)
-</script>
 </script>
 </body>
 </html>
