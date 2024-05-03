@@ -171,30 +171,7 @@
 
   let clickCount = 0; // New variable to keep track of the number of clicks
 
-  // Modified updateScore function
-  function updateScore(event) {
-    clickCount++;
-    if (clickCount % 15 === 0) {
-      // Every 15 clicks, prompt the user with a multiplication question
-      let num1 = Math.floor(Math.random() * 10); // Random single-digit number
-      let num2 = Math.floor(Math.random() * 10); // Random single-digit number
-      let userAnswer = prompt(`What is ${num1} x ${num2}?`);
-      let correctAnswer = num1 * num2;
-      if (parseInt(userAnswer) === correctAnswer) {
-        // If the answer is correct, update the score
-        score += scorePerClick;
-        scoreDisplay.textContent = score;
-        showPointsPopup(scorePerClick, event);
-      } else {
-        alert('Oops! That is not correct. Try again!');
-      }
-    } else {
-      // If not a 15th click, update the score as usual
-      score += scorePerClick;
-      scoreDisplay.textContent = score;
-      showPointsPopup(scorePerClick, event);
-    }
-  }
+
 
   // ... (rest of your existing script)
 </script>
