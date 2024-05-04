@@ -1,50 +1,11 @@
 
-  }
-  #upgrades-container {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background-color: #f8f8f8;
-    border-top: 1px solid #ccc;
-    overflow-y: auto;
-    max-height: 100px;
-  }
-  #toggle-upgrades {
-    background: #ddd;
-    color: #333;
-    padding: 5px 10px;
-    cursor: pointer;
-    text-align: center;
-  }
-  button {
-    font-size: 1.5em;
-    padding: 15px;
-    margin: 5px;
-    border-radius: 20px; /* Rounded corners for buttons */
-  }
-  .points-popup {
-    position: fixed;
-    font-size: 2em;
-    animation: fadeOut 2s forwards;
-    pointer-events: none;
-  }
-  @keyframes fadeOut {
-    to {
-      opacity: 0;
-    }
-  }
-  /* Style for the top right buttons container */
-  #top-right-buttons {
-    position: absolute;
-    top: 20px;
-    right: 20px;<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clicker Game</title>
+<title>Interactive Clicker Game</title>
 <style>
-  /* Your existing styles */
   body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -71,11 +32,57 @@
     font-size: 8em;
     padding: 60px;
   }
+  #upgrades-container {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #f8f8f8;
+    border-top: 1px solid #ccc;
+    overflow-y: auto;
+    max-height: 100px;
+  }
+  #toggle-upgrades {
+    background: #ddd;
+    color: #333;
+    padding: 5px 10px;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 20px; /* Rounded corners for the toggle button */
+  }
+  button {
+    font-size: 1.5em;
+    padding: 15px;
+    margin: 5px;
+    border-radius: 20px; /* Rounded corners for buttons */
+  }
+  .falling-number {
+    position: fixed;
+    animation: fall 2s linear forwards;
+    pointer-events: none; /* Allows clicks to pass through */
+    color: black; /* Changed color to black */
+    font-size: 2em; /* Made the numbers bigger */
+  }
+  @keyframes fall {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(200px); /* Adjust the falling distance as needed */
+      opacity: 0;
+    }
+  }
+  #top-right-buttons {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
 </style>
 </head>
 <body>
 <div id="score-container">Score: <span id="score">0</span></div>
 <button id="clicker-button" onclick="updateScore(event)">👍</button>
+
 <div id="toggle-upgrades" onclick="toggleUpgrades()">Toggle Upgrades</div>
 <div id="upgrades-container">
   <!-- Upgrades will be dynamically added here -->
@@ -94,28 +101,60 @@
 <script>
   let score = 0;
   let scorePerClick = 1;
+  let autoClickerEfficiency = 1;
+  let autoClickerSpeed = 1000; // Interval in milliseconds
   let autoClickerInterval;
   const scoreDisplay = document.getElementById('score');
   const clickerButton = document.getElementById('clicker-button');
   const upgradesContainer = document.getElementById('upgrades-container');
   let upgradesVisible = true;
+  let upgradeCost = 50; // Starting cost for the first upgrade
 
   // Function to update the score
   function updateScore(event) {
     score += scorePerClick;
     scoreDisplay.textContent = score;
-    showPointsPopup(scorePerClick, event);
+    showFallingNumber(scorePerClick, event.clientX, event.clientY);
   }
 
-  // Function to add upgrades
+  // Function to change the emoji on the clicker button
+  function changeEmoji(emoji) {
+    clickerButton.textContent = emoji;
+  }
+
+  // Function to reset the game
+  function resetGame() {
+    score = 0;
+    scorePerClick = 1;
+    autoClickerEfficiency = 1;
+    autoClickerSpeed = 1000;
+    upgradeCost = 50;
+    scoreDisplay.textContent = score;
+    clearInterval(autoClickerInterval);
+    autoClickerInterval = null;
+    upgradesContainer.innerHTML = '';
+    addNextUpgrade();
+    console.log('Game has been reset.');
+  }
+
+  // Function to add upgrades (both regular and autoclicker)
   function addUpgrade(name, cost, effect) {
     const upgrade = document.createElement('button');
     upgrade.textContent = `${name} - Cost: ${cost}`;
     upgrade.onclick = function() {
       if (score >= cost) {
-        score -= cost;
-        effect();
-        upgrade.remove();
+        // Check if the user answers the challenge correctly
+        if (generateChallenge()) {
+          score -= cost;
+          effect();
+          upgrade.remove();
+          // Double the cost for the next upgrade
+          upgradeCost *= 2;
+          // Add the next upgrade
+          addNextUpgrade();
+        } else {
+          alert('Incorrect answer. Try again!');
+        }
       } else {
         console.log('Not enough score to purchase this upgrade.');
       }
@@ -123,31 +162,54 @@
     upgradesContainer.appendChild(upgrade);
   }
 
-  // Add upgrades that double the points per click
-  let upgradeCost = 2;
-  for (let i = 1; i <= 50; i++) {
-    addUpgrade(`Double Points ${i}`, upgradeCost, function() {
+  // Function to add the next upgrade
+  function addNextUpgrade() {
+    addUpgrade('Double Points', upgradeCost, function() {
       scorePerClick *= 2;
-      console.log(`Double Points ${i} upgrade purchased!`);
+      console.log('Double Points upgrade purchased!');
     });
-    upgradeCost *= 50;
+    if (!autoClickerInterval) {
+      addAutoclickerUpgrade('Autoclicker', upgradeCost, function() {
+        autoClickerInterval = setInterval(() => {
+          score += autoClickerEfficiency;
+          scoreDisplay.textContent = score;
+        }, autoClickerSpeed);
+        console.log('Autoclicker upgrade purchased!');
+      });
+    } else {
+      addAutoclickerUpgrade('Double Autoclicker Efficiency', upgradeCost, function() {
+        autoClickerEfficiency *= 2;
+        console.log('Autoclicker efficiency doubled!');
+      });
+      addAutoclickerUpgrade('Autoclicker Speed', upgradeCost, function() {
+        autoClickerSpeed = Math.max(100, autoClickerSpeed / 2); // Prevents speed from becoming 0
+        clearInterval(autoClickerInterval);
+        autoClickerInterval = setInterval(() => {
+          score += autoClickerEfficiency;
+          scoreDisplay.textContent = score;
+        }, autoClickerSpeed);
+        console.log('Autoclicker speed increased!');
+      });
+    }
   }
 
-  // Function to show points popup where the cursor is
-  function showPointsPopup(points, event) {
-    const popup = document.createElement('div');
-    popup.textContent = `+${points}`;
-    popup.classList.add('points-popup');
-    document.body.appendChild(popup);
+  // Function to add autoclicker upgrade
+  function addAutoclickerUpgrade(name, cost, effect) {
+    addUpgrade(name, cost, effect);
+  }
 
-    // Position the popup where the cursor is
-    popup.style.top = `${event.clientY}px`;
-    popup.style.left = `${event.clientX}px`;
+  // Function to show falling number where the cursor is
+  function showFallingNumber(points, x, y) {
+    const fallingNumber = document.createElement('div');
+    fallingNumber.textContent = `+${points}`;
+    fallingNumber.classList.add('falling-number');
+    fallingNumber.style.left = `${x}px`;
+    fallingNumber.style.top = `${y}px`;
+    document.body.appendChild(fallingNumber);
 
-    // Remove the popup after 2 seconds
-    setTimeout(() => {
-      popup.remove();
-    }, 2000);
+    fallingNumber.addEventListener('animationend', () => {
+      fallingNumber.remove();
+    });
   }
 
   // Function to toggle the visibility of the upgrades
@@ -156,52 +218,19 @@
     upgradesContainer.style.maxHeight = upgradesVisible ? '100px' : '0';
   }
 
-  // Function to reset the game
-  function resetGame() {
-    score = 0;
-    scorePerClick = 1;
-    scoreDisplay.textContent = score;
-    clearInterval(autoClickerInterval);
-    autoClickerInterval = null;
-    console.log('Game has been reset.');
+  // Function to generate a multiplication challenge
+  function generateChallenge() {
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    const correctAnswer = num1 * num2;
+
+    const userAnswer = prompt(`What is ${num1} * ${num2}?`);
+
+    return Number(userAnswer) === correctAnswer;
   }
-
-  // Function to change the clicker button to different emojis
-  function changeEmoji(emoji) {
-    clickerButton.textContent = emoji;
-  }
-
-  // ... (rest of your existing script)
-
-  let clickCount = 0; // New variable to keep track of the number of clicks
-
-  // Modified updateScore function
-  function updateScore(event) {
-    clickCount++;
-    if (clickCount % 15 === 0) {
-      // Every 15 clicks, prompt the user with a multiplication question
-      let num1 = Math.floor(Math.random() * 10); // Random single-digit number
-      let num2 = Math.floor(Math.random() * 10); // Random single-digit number
-      let userAnswer = prompt(`What is ${num1} x ${num2}?`);
-      let correctAnswer = num1 * num2;
-      if (parseInt(userAnswer) === correctAnswer) {
-        // If the answer is correct, update the score
-        score += scorePerClick;
-        scoreDisplay.textContent = score;
-        showPointsPopup(scorePerClick, event);
-      } else {
-        alert('Oops! That is not correct. Try again!');
-      }
-    } else {
-      // If not a 15th click, update the score as usual
-      score += scorePerClick;
-      scoreDisplay.textContent = score;
-      showPointsPopup(scorePerClick, event);
-    }
-  }
-
-  // ... (rest of your existing script)
 </script>
 </body>
+</html>
+
 </html>
 
