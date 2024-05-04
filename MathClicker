@@ -1,36 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clicker Game</title>
-<style>
-  /* Your existing styles */
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-image: url('YOUR_CARTOON_LOGS_IMAGE_URL_HERE');
-    background-repeat: repeat;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-  #score-container {
-    position: absolute;
-    top: 0;
-    left: 20px;
-    font-size: 3em;
-    font-weight: bold;
-  }
-  #clicker-button {
-    font-size: 8em;
-    padding: 60px;
+
   }
   #upgrades-container {
     position: absolute;
@@ -69,7 +37,39 @@
   #top-right-buttons {
     position: absolute;
     top: 20px;
-    right: 20px;
+    right: 20px;<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clicker Game</title>
+<style>
+  /* Your existing styles */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-image: url('YOUR_CARTOON_LOGS_IMAGE_URL_HERE');
+    background-repeat: repeat;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  #score-container {
+    position: absolute;
+    top: 0;
+    left: 20px;
+    font-size: 3em;
+    font-weight: bold;
+  }
+  #clicker-button {
+    font-size: 8em;
+    padding: 60px;
   }
 </style>
 </head>
